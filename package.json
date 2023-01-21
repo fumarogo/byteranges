@@ -1,9 +1,9 @@
 {
   "name": "byteranges",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A multipart/byteranges parser",
-  "main": "build/multipart.js",
-  "types": "build/multipart.d.ts",
+  "main": "build/byteranges.js",
+  "types": "build/byteranges.d.ts",
   "files": [
     "build/**/*.ts",
     "build/**/*.js",
