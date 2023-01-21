@@ -1,0 +1,12 @@
+
+--00000000000000000002
+Content-Type: video/mp2t
+Content-Range: bytes 50-60/2027580
+
+ÿÿÿÿÿÿÿÿÿÿÿ
+--00000000000000000002
+Content-Type: video/mp2t
+Content-Range: bytes 1000-1100/2027580
+
+interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 we
+--00000000000000000002--

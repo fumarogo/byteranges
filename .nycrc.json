@@ -1,0 +1,15 @@
+{
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "include": [
+        "src/**/*.ts"
+    ],
+    "reporter": [
+        "cobertura",
+        "lcovonly",
+        "text",
+        "html"
+    ],
+    "temp-dir": "reports/coverage/.nyc_output",
+    "report-dir": "reports/coverage",
+    "all": true
+}

@@ -1,0 +1,85 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "lib": [
+        "es2018"
+      ]
+    },
+    "env": {
+      "browser": false,
+      "commonjs": true,
+      "es6": true,
+      "node": true
+    },
+    "rules": {
+      "no-const-assign": "warn",
+      "no-this-before-super": "warn",
+      "no-unreachable": "warn",
+      "no-unused-vars": "off",
+      "quotes": [
+        "warn",
+        "single",
+        {
+          "avoidEscape": true
+        }
+      ],
+      "constructor-super": "warn",
+      "valid-typeof": "warn",
+      "spaced-comment": "warn",
+      "comma-dangle": [
+        "warn",
+        "never"
+      ],
+      "curly": "warn",
+      "indent": [
+        "warn",
+        4,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "max-len": [
+        "warn",
+        180
+      ],
+      "no-case-declarations": "off",
+      "no-caller": "warn",
+      "no-bitwise": "warn",
+      "no-console": "warn",
+      "no-eval": "warn",
+      "no-catch-shadow": "warn",
+      "no-use-before-define": "warn",
+      "no-var": "warn",
+      "radix": "warn",
+      "semi": "warn",
+      "eqeqeq": "warn",
+      "no-extra-semi": "off",
+      "@typescript-eslint/no-var-requires": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "vars": "all",
+          "args": "none",
+          "ignoreRestSiblings": false
+        }
+      ],
+      "@typescript-eslint/no-inferrable-types": 0,
+      "@typescript-eslint/explicit-module-boundary-types": [
+        "error",
+        {
+          "allowArgumentsExplicitlyTypedAsAny": true
+        }
+      ]
+    }
+  }
