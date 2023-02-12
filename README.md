@@ -17,7 +17,7 @@ npm install byteranges
 ## Usage
 
 ```js
-const { parse } = require('byteranges');
+const { parse, getContentRange, BodyPart } = require('../build/byteranges');
 const http = require('http');
 
 http.get('http://www.columbia.edu/~fdc/picture-of-something.jpg', {
@@ -61,7 +61,7 @@ http.get('http://www.columbia.edu/~fdc/picture-of-something.jpg', {
 Using [superagent](https://github.com/ladjs/superagent):
 
 ```js
-const { parse } = require('byteranges');
+const { parse, getContentRange, BodyPart } = require('../build/byteranges');
 const superagent = require('superagent');
 
 superagent
