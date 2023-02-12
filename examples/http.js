@@ -1,4 +1,4 @@
-const { parse } = require('byteranges');
+const { parse, getContentRange, BodyPart } = require('../build/byteranges');
 const http = require('http');
 
 http.get('http://www.columbia.edu/~fdc/picture-of-something.jpg', {
@@ -12,23 +12,27 @@ http.get('http://www.columbia.edu/~fdc/picture-of-something.jpg', {
         return;
     }
 
-    const contentType = res.headers['content-type'];
-    if (!/multipart\/byteranges/i.test(contentType)) {
-        return;
-    }
-
-    const match = /boundary=(\w+)/i.exec(contentType);
-    if (match === null) {
-        return;
-    }
-
     const chunks = [];
     res.on('data', chunk => {
         chunks.push(chunk);
     });
     res.on('end', () => {
-        const boundary = match[1];
         const body = Buffer.concat(chunks);
+        const contentType = res.headers['content-type'];
+
+        if (!/multipart\/byteranges/i.test(contentType)) {
+            const range = getContentRange(res.headers['content-range']);
+            const part = new BodyPart(range, body, contentType);
+            console.log(JSON.stringify(part));
+            return;
+        }
+
+        const match = /boundary=(\w+)/i.exec(contentType);
+        if (match === null) {
+            return;
+        }
+
+        const boundary = match[1];
         const parts = parse(body, boundary);
         console.log(JSON.stringify(parts));
     });

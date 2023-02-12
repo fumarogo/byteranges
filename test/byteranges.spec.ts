@@ -1,14 +1,14 @@
 import fs from 'fs/promises';
 import chai, { expect } from 'chai';
 import chaiBytes from 'chai-bytes';
-import { InclRange, getContentRange, getContentType, parse } from '../src/byteranges';
+import { InclRange, getContentRange, parse, isCompleteLengthRangeParts, isCompleteLengthRange, ContentRange, isSatisfiableRange } from '../src/byteranges';
 
 chai.use(chaiBytes);
 
 describe('Byteranges', function () {
     it('should parse content-range when the complete length is known', function () {
-        const headers = 'Content-Range: bytes 42-1233/1234';
-        const range = getContentRange(headers);
+        const header = 'bytes 42-1233/1234';
+        const range = getContentRange(header);
         expect(range).to.be.an('object');
         expect(range.unit).to.equals('bytes');
         expect(range.range).to.be.an('object');
@@ -19,8 +19,8 @@ describe('Byteranges', function () {
     });
 
     it('should parse content-range when the complete length is unknown', function () {
-        const headers = 'Content-Range: bytes 42-1233/*';
-        const range = getContentRange(headers);
+        const header = 'bytes 42-1233/*';
+        const range = getContentRange(header);
         expect(range).to.be.an('object');
         expect(range.unit).to.equals('bytes');
         expect(range.range).to.be.an('object');
@@ -31,8 +31,8 @@ describe('Byteranges', function () {
     });
 
     it('should parse content-range with unsatisfied range', function () {
-        const headers = 'Content-Range: bytes */1234';
-        const range = getContentRange(headers);
+        const header = 'bytes */1234';
+        const range = getContentRange(header);
         expect(range).to.be.an('object');
         expect(range.unit).to.equals('bytes');
         expect(range.range).to.equals('*');
@@ -40,20 +40,7 @@ describe('Byteranges', function () {
     });
 
     it('should throw an exception', function () {
-        const headers = '';
         expect(getContentRange).to.throw();
-    });
-
-    it('should parse content-type', function () {
-        const headers = 'Content-Type: application/json';
-        const type = getContentType(headers);
-        expect(type).to.equals('application/json');
-    });
-
-    it('should return udefined', function () {
-        const headers = '';
-        const type = getContentType(headers);
-        expect(type).to.equals(undefined);
     });
 
     it('should parse multipart/byteranges body', async function () {
@@ -70,5 +57,26 @@ describe('Byteranges', function () {
             32, 98, 95, 98, 105, 97, 115, 61, 48, 32, 100, 105, 114, 101, 99, 116,
             61, 49, 32, 119, 101
         ]);
+        expect(isCompleteLengthRangeParts(parts));
+    });
+
+    it('should assert that range is satisfiable', function () {
+        const range = new ContentRange('bytes', new InclRange(0, 1), 1);
+        expect(isSatisfiableRange(range)).to.be.true;
+    });
+
+    it('should assert that range is not satisfiable', function () {
+        const range = new ContentRange('bytes', '*', '*');
+        expect(isSatisfiableRange(range)).to.be.false;
+    });
+
+    it('should assert that range is complete', function () {
+        const range = new ContentRange('bytes', new InclRange(0, 1), 1);
+        expect(isCompleteLengthRange(range)).to.be.true;
+    });
+    
+    it('should assert that range is not complete', function () {
+        const range = new ContentRange('bytes', new InclRange(0, 1), '*');
+        expect(isCompleteLengthRange(range)).to.be.false;
     });
 });

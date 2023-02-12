@@ -1,4 +1,4 @@
-const { parse } = require('byteranges');
+const { parse, getContentRange, BodyPart } = require('../build/byteranges');
 const superagent = require('superagent');
 
 superagent
@@ -18,6 +18,9 @@ superagent
 
         const contentType = res.headers['content-type'];
         if (!/multipart\/byteranges/i.test(contentType)) {
+            const range = getContentRange(res.headers['content-range']);
+            const part = new BodyPart(range, res.body, contentType);
+            console.log(JSON.stringify(part));
             return;
         }
 

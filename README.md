@@ -17,8 +17,8 @@ npm install byteranges
 ## Usage
 
 ```js
-const http = require('http');
 const { parse } = require('byteranges');
+const http = require('http');
 
 http.get('http://www.columbia.edu/~fdc/picture-of-something.jpg', {
     headers: {
@@ -26,28 +26,72 @@ http.get('http://www.columbia.edu/~fdc/picture-of-something.jpg', {
     }
 }, res => {
     const { statusCode } = res;
-    const contentType = res.headers['content-type'];
-
-    if (statusCode !== 206 && !/multipart\/byteranges/i.test(contentType)) {
+    if (statusCode !== 206) {
         res.resume();
         return;
     }
 
     const chunks = [];
-
     res.on('data', chunk => {
         chunks.push(chunk);
     });
-
     res.on('end', () => {
-        const match = /boundary=(\w+)/i.exec(contentType);
+        const body = Buffer.concat(chunks);
+        const contentType = res.headers['content-type'];
 
+        if (!/multipart\/byteranges/i.test(contentType)) {
+            const range = getContentRange(res.headers['content-range']);
+            const part = new BodyPart(range, body, contentType);
+            console.log(JSON.stringify(part));
+            return;
+        }
+
+        const match = /boundary=(\w+)/i.exec(contentType);
+        if (match === null) {
+            return;
+        }
+
+        const boundary = match[1];
+        const parts = parse(body, boundary);
+        console.log(JSON.stringify(parts));
+    });
+});
+```
+
+Using [superagent](https://github.com/ladjs/superagent):
+
+```js
+const { parse } = require('byteranges');
+const superagent = require('superagent');
+
+superagent
+    .get('http://www.columbia.edu/~fdc/picture-of-something.jpg')
+    .set('Range', 'bytes=1-10,101-150')
+    .buffer(true)
+    .parse(superagent.parse['application/octet-stream'])
+    .end((err, res) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+
+        if (res.status !== 206) {
+            return;
+        }
+
+        const contentType = res.headers['content-type'];
+        if (!/multipart\/byteranges/i.test(contentType)) {
+            const range = getContentRange(res.headers['content-range']);
+            const part = new BodyPart(range, res.body, contentType);
+            console.log(JSON.stringify(part));
+            return;
+        }
+
+        const match = /boundary=(\w+)/i.exec(contentType);
         if (match !== null) {
             const boundary = match[1];
-            const body = Buffer.concat(chunks);
-            const parts = parse(body, boundary);
+            const parts = parse(res.body, boundary);
             console.log(JSON.stringify(parts));
         }
     });
-});
 ```
